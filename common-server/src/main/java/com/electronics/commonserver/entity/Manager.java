@@ -13,8 +13,8 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("app_user")
-public class User {
+@TableName("user")
+public class Manager {
 
     @TableId(type = IdType.AUTO)
     private Integer id;
@@ -24,23 +24,17 @@ public class User {
 
     private String nickName;
 
-    private String password;
-
-    private String salt;
-
     private String phone;
 
     private String email;
 
+    private String password;
+
     private String avatar;
 
-    private Integer gender;
-
-    private Integer creditScore;
-
-    private Integer status;
+    private String status;
 
     private LocalDateTime createTime;
 
-    private LocalDateTime lastLoginTime;
+    private String salt;
 }

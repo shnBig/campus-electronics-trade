@@ -2,10 +2,10 @@ package com.electronics.userservice.controller;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.electronics.commonserver.dto.LoginRequest;
-import com.electronics.commonserver.dto.LoginResponse;
-import com.electronics.commonserver.entity.User;
-import com.electronics.commonserver.exception.BusinessException;
+import com.electronics.commonserver.dto.UserRegisterDTO;
 import com.electronics.commonserver.result.Result;
+import com.electronics.commonserver.vo.UserLoginVO;
+import com.electronics.commonserver.vo.UserRegisterVO;
 import com.electronics.userservice.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,32 +20,17 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/login")
-    public Result<LoginResponse> login(@RequestBody LoginRequest loginRequest) {
+    public Result<UserLoginVO> login(@RequestBody LoginRequest loginRequest) {
         log.info("登录接口:{},{}", loginRequest.getUsername(), loginRequest.getPassword());
-        try {
-            LoginResponse loginResponse = userService.login(loginRequest);
-            return Result.success("登录成功", loginResponse);
-        } catch (BusinessException e) {
-            log.error("登录失败: {}", e.getMessage());
-            return Result.error(e.getCode(), e.getMessage());
-        } catch (Exception e) {
-            log.error("登录异常: {}", e.getMessage());
-            return Result.error(500, "系统错误");
-        }
+        UserLoginVO loginResponse = userService.login(loginRequest);
+        return Result.success("登录成功", loginResponse);
     }
 
     @PostMapping("/register")
-    public Result<LoginResponse> register(@RequestBody User user) {
-        try {
-            LoginResponse loginResponse = userService.register(user);
-            return Result.success("注册成功", loginResponse);
-        } catch (BusinessException e) {
-            log.error("注册失败: {}", e.getMessage());
-            return Result.error(e.getCode(), e.getMessage());
-        } catch (Exception e) {
-            log.error("注册异常: {}", e.getMessage());
-            return Result.error(500, "系统错误");
-        }
+    public Result<UserRegisterVO> register(@RequestBody UserRegisterDTO user) {
+        log.info("用户注册:{}",user);
+        UserRegisterVO loginResponse = userService.register(user);
+        return Result.success("注册成功", loginResponse);
     }
 
     @GetMapping("/testHot")

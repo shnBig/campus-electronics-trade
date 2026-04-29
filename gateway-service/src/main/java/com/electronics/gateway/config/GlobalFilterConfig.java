@@ -70,6 +70,12 @@ public class GlobalFilterConfig implements GlobalFilter, Ordered {
         if(url.startsWith("/user/register")){
             return true;
         }
+        if(url.startsWith("/manager/login")){
+            return true;
+        }
+        if(url.startsWith("/manager/register")){
+            return true;
+        }
         return false;
     }
     private Mono<Void> unAuthorize(ServerWebExchange exchange){

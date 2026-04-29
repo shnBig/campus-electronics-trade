@@ -3,11 +3,8 @@
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.electronics.userservice.mapper.UserMapper">
 
-    <select id="selectByUserName" resultType="User">
-        SELECT * FROM user
-        WHERE USER_NAME = #{userName}
+    <select id="selectByUserName" resultType="com.electronics.commonserver.entity.User">
+        SELECT * FROM app_user
+        WHERE user_name = #{username}
     </select>
-
-
-
 </mapper>
