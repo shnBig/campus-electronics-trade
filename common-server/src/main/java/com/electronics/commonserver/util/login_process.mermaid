@@ -1,0 +1,57 @@
+graph TB
+    Start([用户发起登录请求]) --> Frontend[前端发送 POST /user/login]
+    Frontend --> Gateway[网关 Gateway]
+    
+    Gateway --> CheckUrl{是否登录接口?}
+    CheckUrl -->|是 /user/login| Pass[直接放行]
+    CheckUrl -->|否| CheckToken{是否有 Token?}
+    
+    CheckToken -->|无 Token| Unauthorized1[返回 401 未授权]
+    CheckToken -->|有 Token| VerifyRedis[验证 Redis 中 token:Token 是否存在]
+    
+    VerifyRedis --> TokenValid{Token 是否有效?}
+    TokenValid -->|不存在| Unauthorized2[返回 401 未授权]
+    TokenValid -->|存在| ExtractUserId[从 Redis 获取 UserId]
+    ExtractUserId --> AddHeader[将 UserId 放入请求头 X-User-Id]
+    AddHeader --> Forward[转发到 user-service]
+    
+    Pass --> UserController[UserController.login]
+    Forward --> UserController
+    
+    UserController --> LogInfo[记录日志: 用户名和密码]
+    LogInfo --> UserService[UserService.login]
+    
+    UserService --> QueryDB[根据用户名查询数据库]
+    QueryDB --> UserExists{用户是否存在?}
+    
+    UserExists -->|不存在| Error404[抛出 404: 用户名不存在]
+    UserExists -->|存在| GetSalt[获取用户盐值 Salt]
+    
+    GetSalt --> EncryptPassword[用户输入密码 + Salt 进行 MD5 加密]
+    EncryptPassword --> ComparePassword{密码是否匹配?}
+    
+    ComparePassword -->|不匹配| Error401[抛出 401: 密码错误]
+    ComparePassword -->|匹配| CheckStatus{用户状态?}
+    
+    CheckStatus -->|DISABLED| Error403[抛出 403: 账号已禁用]
+    CheckStatus -->|NORMAL| GenerateToken[生成 JWT Token]
+    
+    GenerateToken --> SaveRedis1[存储 token:Token → UserId]
+    SaveRedis1 --> SaveRedis2[存储 user:token:用户名 → Token]
+    
+    SaveRedis2 --> BuildResponse[构建 LoginResponse]
+    BuildResponse --> ReturnSuccess[返回 200 成功 + Token + 用户信息]
+    
+    Error404 --> CatchException[Controller 捕获异常]
+    Error401 --> CatchException
+    Error403 --> CatchException
+    
+    CatchException --> ReturnError[返回对应错误码和消息]
+    
+    Unauthorized1 --> End1([结束])
+    Unauthorized2 --> End2([结束])
+    ReturnSuccess --> End3([结束])
+    ReturnError --> End4([结束])
+    
+    style Start fill:#e1f5e1
+   
