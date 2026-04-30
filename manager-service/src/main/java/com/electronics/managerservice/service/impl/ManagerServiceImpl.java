@@ -29,7 +29,7 @@ public class ManagerServiceImpl implements ManagerService {
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
 
-    @Value("${config.redisTimeout:3600}")
+    @Value("${config.redisTimeout}")
     private Long redisTimeout;
 
     /**

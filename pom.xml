@@ -23,6 +23,8 @@
         <module>point-service</module>
         <module>gateway-service</module>
         <module>user-service</module>
+        <module>manager-service</module>
+        <module>common-server</module>
     </modules>
 
     <dependencyManagement>

@@ -25,6 +25,7 @@ public class Result<T> {
         return result;
     }
 
+
     public static <T> Result<T> error(String message) {
         Result<T> result = new Result<>();
         result.setCode(500);

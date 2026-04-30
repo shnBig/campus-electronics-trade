@@ -34,22 +34,33 @@ public class GlobalFilterConfig implements GlobalFilter, Ordered {
         String url = request.getURI().getPath();
         //获取token信息
         String token = request.getHeaders().getFirst(AUTH_TOKEN);
-
+        System.out.println("请求头中的原始token:"+token);
+        
+        // 处理 Bearer 前缀
+        if (token != null && token.startsWith("Bearer ")) {
+            token = token.substring(7);
+            System.out.println("去除Bearer后的token:"+token);
+        }
         // 如果不需要进行验证的接口我们就直接放行
         if(this.shouldNotFilter(url)){
             return chain.filter(exchange);
         }
 
         // 验证token是否为 空
-        if(StringUtil.isNullOrEmpty( token)){
+        if(StringUtil.isNullOrEmpty(token)){
+            System.out.println("被认证为空");
             return unAuthorize(exchange);
         }
 
         // 验证redis中是否存在token（使用 token: 前缀）
         String tokenKey = "token:" + token;
+        System.out.println("查询Redis的key:"+tokenKey);
+        System.out.println("Redis中所有token开头的key:"+redisTemplate.keys("token:*"));
         if(!redisTemplate.hasKey(tokenKey)){
+            System.out.println("redis中不存在"+tokenKey);
             return unAuthorize(exchange);
         }
+        System.out.println("redis中存在"+tokenKey);
 
         // 把新的exchange放回到过滤器中
         ServerHttpRequest newRequest = request.mutate().header(AUTH_TOKEN, token).build();

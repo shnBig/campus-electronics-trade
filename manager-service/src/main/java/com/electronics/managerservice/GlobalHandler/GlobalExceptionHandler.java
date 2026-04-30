@@ -1,5 +1,6 @@
-package com.electronics.commonserver.exception;
+package com.electronics.managerservice.GlobalHandler;
 
+import com.electronics.commonserver.exception.BusinessException;
 import com.electronics.commonserver.result.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
@@ -32,7 +33,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(DuplicateKeyException.class)
     public Result<?> handleDuplicateKeyException(DuplicateKeyException e) {
-        log.info("数据重复约束冲突: {}", e.getMessage());
+        log.warn("数据重复约束冲突: {}", e.getMessage());
         String message = "数据已存在";
         String errorMessage = e.getMessage();
         if (errorMessage != null) {
